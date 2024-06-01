@@ -10,7 +10,6 @@ import net.minecraft.world.level.Level;
 import org.confluence.mod.Confluence;
 
 public final class ModDamageTypes {
-    public static final ResourceKey<DamageType> FALLING_STAR = register("falling_star");
     public static final ResourceKey<DamageType> ACID_VENOM = register("acid_venom");
     public static final ResourceKey<DamageType> CURSED_INFERNO = register("cursed_inferno");
     public static final ResourceKey<DamageType> FROST_BURN = register("frost_burn");

@@ -3,17 +3,11 @@ package org.confluence.mod.datagen;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.WallSignBlock;
-import net.minecraft.world.level.block.WallTorchBlock;
 import net.minecraftforge.common.data.LanguageProvider;
 import org.confluence.mod.Confluence;
-import org.confluence.mod.block.ModBlocks;
 import org.confluence.mod.datagen.limit.CustomName;
-import org.confluence.mod.effect.ModEffects;
 import org.confluence.mod.entity.ModEntities;
 import org.confluence.mod.item.ModItems;
-import org.confluence.mod.item.ModPrefix;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -264,46 +258,5 @@ public class ModEnglishProvider extends LanguageProvider {
         add("prefix.confluence.tooltip.armor", "Armor");
         add("prefix.confluence.tooltip.additional_mana", "Additional Mana");
         add("prefix.confluence.tooltip.movement_speed", "Movement Speed");
-
-        ModBlocks.BLOCKS.getEntries().forEach(block -> {
-            Block block1 = block.get();
-            if (block1 instanceof WallSignBlock || block1 instanceof WallTorchBlock) return;
-            add(block1, toTitleCase(block.getId().getPath()));
-        });
-        ModItems.ITEMS.getEntries().forEach(item -> {
-            Item item1 = item.get();
-            if (item1 instanceof BlockItem) return;
-            if (item1 instanceof CustomName customName) add(item1, customName.getGenName());
-            else add(item1, toTitleCase(item.getId().getPath()));
-        });
-        ModEntities.ENTITIES.getEntries().forEach(entity -> add(entity.get(), toTitleCase(entity.getId().getPath())));
-        ModEffects.EFFECTS.getEntries().forEach(effect -> add(effect.get(), toTitleCase(effect.getId().getPath())));
-        for (ModPrefix.Universal universal : ModPrefix.Universal.values()) {
-            add("prefix.confluence." + universal.name().toLowerCase(), toTitleCase(universal.name()));
-        }
-        for (ModPrefix.Common common : ModPrefix.Common.values()) {
-            if (common == ModPrefix.Common.QUICK || common == ModPrefix.Common.DEADLY) continue;
-            add("prefix.confluence." + common.name().toLowerCase(), toTitleCase(common.name()));
-        }
-        for (ModPrefix.Melee melee : ModPrefix.Melee.values()) {
-            add("prefix.confluence." + melee.name().toLowerCase(), toTitleCase(melee.name()));
-        }
-        for (ModPrefix.Ranged ranged : ModPrefix.Ranged.values()) {
-            if (ranged == ModPrefix.Ranged.HASTY || ranged == ModPrefix.Ranged.DEADLY) continue;
-            add("prefix.confluence." + ranged.name().toLowerCase(), toTitleCase(ranged.name()));
-        }
-        for (ModPrefix.MagicAndSumming magicAndSumming : ModPrefix.MagicAndSumming.values()) {
-            add("prefix.confluence." + magicAndSumming.name().toLowerCase(), toTitleCase(magicAndSumming.name()));
-        }
-        for (ModPrefix.Curio curio : ModPrefix.Curio.values()) {
-            if (curio == ModPrefix.Curio.HASTY || curio == ModPrefix.Curio.QUICK) continue;
-            add("prefix.confluence." + curio.name().toLowerCase(), toTitleCase(curio.name()));
-        }
-    }
-
-    private static String toTitleCase(String raw) {
-        return Arrays.stream(raw.split("_"))
-            .map(word -> Character.toUpperCase(word.charAt(0)) + word.substring(1).toLowerCase())
-            .collect(Collectors.joining(" "));
     }
 }

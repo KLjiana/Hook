@@ -3,7 +3,6 @@ package org.confluence.mod.misc;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.Rarity;
-import org.confluence.mod.client.color.AnimateColor;
 
 public final class ModRarity {
     public static final Rarity GRAY = Rarity.create("gray", style -> style.withColor(0x828282));
@@ -26,19 +25,5 @@ public final class ModRarity {
 
     public interface Special {
         MutableComponent withColor(String descriptionId);
-    }
-
-    public interface Expert extends Special {
-        @Override
-        default MutableComponent withColor(String descriptionId) {
-            return Component.translatable(descriptionId).withStyle(style -> style.withColor(AnimateColor.getExpertColor()));
-        }
-    }
-
-    public interface Master extends Special {
-        @Override
-        default MutableComponent withColor(String descriptionId) {
-            return Component.translatable(descriptionId).withStyle(style -> style.withColor(AnimateColor.getMasterColor()));
-        }
     }
 }

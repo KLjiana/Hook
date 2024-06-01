@@ -14,14 +14,6 @@ import org.confluence.mod.util.CuriosUtils;
 import java.util.function.Supplier;
 
 public record HookThrowingPacketC2S(boolean throwing, int id) {
-    public static HookThrowingPacketC2S push() {
-        return new HookThrowingPacketC2S(true, 0);
-    }
-
-    public static HookThrowingPacketC2S pop(int id) {
-        return new HookThrowingPacketC2S(false, id);
-    }
-
     public static void encode(HookThrowingPacketC2S packet, FriendlyByteBuf friendlyByteBuf) {
         friendlyByteBuf.writeBoolean(packet.throwing);
         friendlyByteBuf.writeInt(packet.id);
