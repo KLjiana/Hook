@@ -7,6 +7,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.confluence.mod.Confluence;
+import org.confluence.mod.client.handler.HookThrowingHandler;
 
 @Mod.EventBusSubscriber(modid = Confluence.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public final class ForgeClient {
@@ -16,5 +17,6 @@ public final class ForgeClient {
         LocalPlayer localPlayer = minecraft.player;
         if (event.phase == TickEvent.Phase.START) return;
         if (localPlayer == null) return;
+        HookThrowingHandler.handle(localPlayer);
     }
 }

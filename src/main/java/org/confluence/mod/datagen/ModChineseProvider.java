@@ -14,7 +14,7 @@ public class ModChineseProvider extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
-        add("creativetab.confluence.tools", "汇流来世 | 抓钩栏");
+        add("creativetab.confluence.hook", "汇流来世 | 抓钩栏");
 
         add("key.confluence.hook", "使用钩爪");
         add("curios.identifier.hook", "钩爪栏");

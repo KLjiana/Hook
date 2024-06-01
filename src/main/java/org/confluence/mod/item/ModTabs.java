@@ -8,7 +8,6 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 import org.confluence.mod.Confluence;
 import org.confluence.mod.item.hook.Hooks;
-import org.confluence.mod.item.hook.AbstractHookItem;
 
 @SuppressWarnings("unused")
 public final class ModTabs {
@@ -16,7 +15,7 @@ public final class ModTabs {
         // 工具
     public static final RegistryObject<CreativeModeTab> HOOKS = TABS.register("hooks",
         () -> CreativeModeTab.builder().icon(()->new ItemStack(Hooks.LUNAR_HOOK.get()))
-                .title(Component.translatable("creativetab.confluence.tools"))
+                .title(Component.translatable("creativetab.confluence.hook"))
             .displayItems((parameters, output) -> {
                 for (Hooks hooks : Hooks.values()) output.accept(hooks.get());
             })

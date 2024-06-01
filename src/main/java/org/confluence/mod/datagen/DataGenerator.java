@@ -22,5 +22,9 @@ public class DataGenerator {
         boolean client = event.includeClient();
         generator.addProvider(client, new ModChineseProvider(output));
         generator.addProvider(client, new ModEnglishProvider(output));
+        generator.addProvider(client, new ModItemModelProvider(output, helper));
+
+        boolean server = event.includeServer();
+        generator.addProvider(server, new ModDamageTypeTagsProvider(output, lookup, helper));
     }
 }
