@@ -25,6 +25,8 @@ public class DataGenerator {
         generator.addProvider(client, new ModItemModelProvider(output, helper));
 
         boolean server = event.includeServer();
-        generator.addProvider(server, new ModDamageTypeTagsProvider(output, lookup, helper));
+        ModBlockTagsProvider blockTagsProvider = new ModBlockTagsProvider(output, lookup, helper);
+        generator.addProvider(server, blockTagsProvider);
+        generator.addProvider(server, new ModItemTagsProvider(output, lookup, blockTagsProvider.contentsGetter(), helper));
     }
 }

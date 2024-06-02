@@ -37,6 +37,5 @@ public final class Confluence {
         ModItems.register(bus);
         ModEntities.ENTITIES.register(bus);
         ModTabs.TABS.register(bus);
-        
     }
 }

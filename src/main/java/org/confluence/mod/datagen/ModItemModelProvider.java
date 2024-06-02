@@ -10,11 +10,8 @@ import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import org.confluence.mod.Confluence;
 import org.confluence.mod.datagen.limit.CustomItemModel;
-import org.confluence.mod.datagen.limit.CustomModel;
-import org.confluence.mod.datagen.limit.NormalGeoItem;
 import org.confluence.mod.item.ModItems;
 import org.confluence.mod.item.common.IconItem;
-import software.bernie.geckolib.animatable.GeoItem;
 
 import static org.confluence.mod.Confluence.MODID;
 
@@ -45,10 +42,6 @@ public class ModItemModelProvider extends ItemModelProvider {
                     if (block instanceof CustomItemModel) return;
                     if (block instanceof DoorBlock) {
                         withExistingParent(path, "item/generated").texture("layer0", new ResourceLocation(MODID, "item/" + path));
-                    } else if (block instanceof TrapDoorBlock) {
-                        withExistingParent(path, new ResourceLocation(MODID, "block/" + path + "_bottom"));
-                    } else {
-                        withExistingParent(path, new ResourceLocation(MODID, "block/" + path + (hasInventory(block) ? "_inventory" : "")));
                     }
                 } else if (value instanceof SpawnEggItem) {
                     withExistingParent(path, "item/template_spawn_egg");
@@ -62,7 +55,4 @@ public class ModItemModelProvider extends ItemModelProvider {
         });
     }
 
-    private static boolean hasInventory(Block block) {
-        return block instanceof ButtonBlock || block instanceof FenceBlock;
-    }
 }
