@@ -6,6 +6,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.NetworkEvent;
+import org.confluence.mod.misc.ModSounds;
 import org.confluence.mod.mixin.accessor.LivingEntityAccessor;
 import org.confluence.mod.network.NetworkHandler;
 import org.confluence.mod.network.c2s.PlayerJumpPacketC2S;
@@ -78,6 +79,7 @@ public final class PlayerJumpHandler {
                 cloudFinished = true;
                 jumpKeyDown = true;
                 multiJump(localPlayer, cloudSpeed);
+                localPlayer.playSound(ModSounds.DOUBLE_JUMP.get());
             } else if (remainFlyTicks-- > 0) {
                 fly(localPlayer, flySpeed);
             } else {

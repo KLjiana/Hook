@@ -15,8 +15,17 @@ import org.lwjgl.glfw.GLFW;
 public final class KeyBindings {
     @SubscribeEvent
     public static void keyBinding(RegisterKeyMappingsEvent event) {
+        event.register(METAL_DETECTOR.get());
         event.register(HOOK.get());
     }
+
+    public static final Lazy<KeyMapping> METAL_DETECTOR = Lazy.of(() -> new KeyMapping(
+        "key.confluence.metal_detector",
+        KeyConflictContext.IN_GAME,
+        InputConstants.Type.KEYSYM,
+        GLFW.GLFW_KEY_RIGHT_CONTROL,
+        "key.categories.misc"
+    ));
 
     public static final Lazy<KeyMapping> HOOK = Lazy.of(() -> new KeyMapping(
         "key.confluence.hook",
