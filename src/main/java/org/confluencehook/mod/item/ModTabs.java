@@ -15,7 +15,7 @@ public final class ModTabs {
     // 工具
     public static final RegistryObject<CreativeModeTab> HOOK = TABS.register("hook",
         () -> CreativeModeTab.builder().icon(() -> new ItemStack(Hooks.GRAPPLING_HOOK.get()))
-            .title(Component.translatable("creativetab.Confluencehook.hook"))
+            .title(Component.translatable("creativetab.confluencehook.hook"))
             .displayItems((parameters, output) -> {
                 for (Hooks hooks : Hooks.values()) output.accept(hooks.get());
             })
