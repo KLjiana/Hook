@@ -89,8 +89,8 @@ dependencies {
 }
 
 mixin {
-    add sourceSets.main, "confluence.refmap.json"
-    config 'confluence.mixins.json'
+    add sourceSets.main, "confluencehook.refmap.json"
+    config 'confluencehook.mixins.json'
 }
 
 tasks.named('processResources', ProcessResources).configure {

@@ -1,0 +1,9 @@
+{
+    "required": false,
+    "package": "",
+    "refmap": "confluencehook.refmap.json",
+    "compatibilityLevel": "JAVA_17",
+    "mixins": [],
+    "minVersion": "0.8.5",
+    "client": []
+}

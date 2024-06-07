@@ -3,27 +3,27 @@ loaderVersion = "${loader_version_range}"
 license = "${mod_license}"
 
 [[mods]]
-modId = "confluence"
+modId = "confluencehook"
 version = "${mod_version}"
 displayName = "${mod_name}"
 authors = "${mod_authors}"
 description = '''${mod_description}'''
 
-[[dependencies.confluence]]
+[[dependencies.confluencehook]]
 modId = "forge"
 mandatory = true
 versionRange = "${forge_version_range}"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.confluence]]
+[[dependencies.confluencehook]]
 modId = "minecraft"
 mandatory = true
 versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.confluence]]
+[[dependencies.confluencehook]]
 modId="curios"
 mandatory=true
 versionRange="[5.7.0+1.20.1,)"
