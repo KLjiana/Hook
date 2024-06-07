@@ -12,7 +12,7 @@ version = mod_version
 group = mod_group_id
 
 base {
-    archivesName = "Confluence"
+    archivesName = "Hook"
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -89,8 +89,8 @@ dependencies {
 }
 
 mixin {
-    add sourceSets.main, "confluencehook.refmap.json"
-    config 'confluencehook.mixins.json'
+    add sourceSets.main, "hook.refmap.json"
+    config 'hook.mixins.json'
 }
 
 tasks.named('processResources', ProcessResources).configure {
