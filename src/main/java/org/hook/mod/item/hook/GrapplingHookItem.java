@@ -29,7 +29,7 @@ public class GrapplingHookItem extends AbstractHookItem {
 
     @Override
     public AbstractHookEntity getHook(ItemStack itemStack, AbstractHookItem item, Player player, Level level) {
-        return new BaseHookEntity(item, player, level, BaseHookEntity.Variant.GRAPPLING);
+        return new BaseHookEntity(item, player, level, BaseHookEntity.Variant.DIAMOND);
     }
 
     @Override

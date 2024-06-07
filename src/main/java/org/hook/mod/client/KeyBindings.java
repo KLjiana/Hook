@@ -19,7 +19,7 @@ public final class KeyBindings {
     }
 
     public static final Lazy<KeyMapping> HOOK = Lazy.of(() -> new KeyMapping(
-        "key.confluencehook.hook",
+        "key.hook.hook",
         KeyConflictContext.IN_GAME,
         InputConstants.Type.KEYSYM,
         GLFW.GLFW_KEY_F,

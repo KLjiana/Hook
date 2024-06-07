@@ -20,13 +20,9 @@ public class BaseHookRenderer extends AbstractHookRenderer<BaseHookEntity> {
         new ResourceLocation(MODID, "textures/entity/hook/amber_hook.png"),
         new ResourceLocation(MODID, "textures/entity/hook/diamond_hook.png")
     };
-    private final BlockState[] CHAINS;
 
     public BaseHookRenderer(EntityRendererProvider.Context pContext) {
         super(pContext);
-        this.CHAINS = new BlockState[]{
-            Blocks.CHAIN.defaultBlockState(),
-        };
     }
 
     @Override
@@ -36,6 +32,6 @@ public class BaseHookRenderer extends AbstractHookRenderer<BaseHookEntity> {
 
     @Override
     public BlockState getChain(BaseHookEntity entity) {
-        return CHAINS[entity.getVariant().getId()];
+        return Blocks.CHAIN.defaultBlockState();
     }
 }

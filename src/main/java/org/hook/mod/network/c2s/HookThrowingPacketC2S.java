@@ -22,6 +22,8 @@ public record HookThrowingPacketC2S(boolean throwing, int id) {
         return new HookThrowingPacketC2S(false, id);
     }
 
+
+
     public static void encode(HookThrowingPacketC2S packet, FriendlyByteBuf friendlyByteBuf) {
         friendlyByteBuf.writeBoolean(packet.throwing);
         friendlyByteBuf.writeInt(packet.id);

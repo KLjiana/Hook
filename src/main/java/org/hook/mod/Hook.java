@@ -11,7 +11,6 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.hook.mod.entity.ModEntities;
 import org.hook.mod.item.ModItems;
 import org.hook.mod.item.ModTabs;
-import org.hook.mod.misc.ModPaintings;
 import org.hook.mod.network.NetworkHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +21,7 @@ import java.util.HashSet;
 @Mod(Hook.MODID)
 public final class Hook {
     public static final String MODID = "hook";
-    public static final Logger LOGGER = LoggerFactory.getLogger("Confluence");
+    public static final Logger LOGGER = LoggerFactory.getLogger("Hook");
     public static final Gson GSON = new Gson();
 
     public static final HashSet<ResourceLocation> REQUIRE_PARENT_DONE = new HashSet<>();
@@ -31,7 +30,6 @@ public final class Hook {
     public Hook() throws ClassNotFoundException {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         ModItems.register(bus);
-        ModPaintings.register(bus);
         ModEntities.ENTITIES.register(bus);
         ModTabs.TABS.register(bus);
         NetworkHandler.register();
