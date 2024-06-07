@@ -13,7 +13,6 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import org.confluence.mod.Confluence;
 import org.confluence.mod.datagen.limit.*;
 import org.confluence.mod.item.ModItems;
-import software.bernie.geckolib.animatable.GeoItem;
 
 import static org.confluence.mod.Confluence.MODID;
 
@@ -29,7 +28,6 @@ public class ModItemModelProvider extends ItemModelProvider {
     protected void registerModels() {
         ModItems.ITEMS.getEntries().forEach(item -> {
             Item value = item.get();
-            if (shouldSkip(value)) return;
 
             String path = item.getId().getPath().toLowerCase();
             boolean isBlockItem = false;
@@ -70,9 +68,5 @@ public class ModItemModelProvider extends ItemModelProvider {
 
     private static boolean isHandheld(Item item) {
         return item instanceof TieredItem;
-    }
-
-    private static boolean shouldSkip(Item item) {
-        return item instanceof CustomModel || (item instanceof GeoItem && !(item instanceof NormalGeoItem));
     }
 }

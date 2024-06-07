@@ -15,7 +15,6 @@ import org.confluence.mod.misc.ModPaintings;
 import org.confluence.mod.network.NetworkHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import software.bernie.geckolib.GeckoLib;
 
 import java.util.HashSet;
 
@@ -30,7 +29,6 @@ public final class Confluence {
     public static final ResourceKey<Level> HELL = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(MODID, "hell"));
 
     public Confluence() throws ClassNotFoundException {
-        GeckoLib.initialize();
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         ModItems.register(bus);
         ModPaintings.register(bus);
