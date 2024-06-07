@@ -1,8 +1,0 @@
-{
-    "parent": "block/chain",
-    "render_type": "cutout",
-    "textures": {
-        "particle": "confluence:block/chain/amethyst_chain",
-        "all": "confluence:block/chain/amethyst_chain"
-    }
-}

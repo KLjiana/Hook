@@ -31,7 +31,6 @@ public final class HookThrowingHandler {
                         if (subtract.lengthSqr() < 1.0) {
                             Vec3 motion = localPlayer.getDeltaMovement().scale(0.05);
                             localPlayer.setDeltaMovement(motion.x, 0.0, motion.z);
-                            PlayerJumpHandler.flushState(false);
                         } else {
                             Vec3 motion = subtract.normalize().scale(hookEntity.getPullVelocity());
                             localPlayer.setDeltaMovement(localPlayer.getDeltaMovement().scale(0.96).add(motion));

@@ -22,14 +22,11 @@ public class DataGenerator {
         boolean client = event.includeClient();
         generator.addProvider(client, new ModChineseProvider(output));
         generator.addProvider(client, new ModEnglishProvider(output));
-        generator.addProvider(client, new ModBlockStateProvider(output, helper));
         generator.addProvider(client, new ModItemModelProvider(output, helper));
 
         boolean server = event.includeServer();
         ModBlockTagsProvider blockTagsProvider = new ModBlockTagsProvider(output, lookup, helper);
         generator.addProvider(server, blockTagsProvider);
         generator.addProvider(server, new ModItemTagsProvider(output, lookup, blockTagsProvider.contentsGetter(), helper));
-        generator.addProvider(server, new ModLootTableProvider(output));
-        generator.addProvider(server, new ModDamageTypeTagsProvider(output, lookup, helper));
     }
 }

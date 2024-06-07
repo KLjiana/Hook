@@ -1,9 +1,6 @@
 package org.confluence.mod.misc;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.Rarity;
-import org.confluence.mod.client.color.AnimateColor;
 
 public final class ModRarity {
     public static final Rarity GRAY = Rarity.create("gray", style -> style.withColor(0x828282));
@@ -19,26 +16,4 @@ public final class ModRarity {
     public static final Rarity CYAN = Rarity.create("cyan", style -> style.withColor(0x05C8FF));
     public static final Rarity RED = Rarity.create("red", style -> style.withColor(0xFF2864));
     public static final Rarity PURPLE = Rarity.create("purple", style -> style.withColor(0xB428FF));
-
-    public static final Rarity EXPERT = Rarity.create("expert", style -> style.withColor(0x000000));
-    public static final Rarity MASTER = Rarity.create("master", style -> style.withColor(0x000000));
-    public static final Rarity QUEST = Rarity.create("quest", style -> style.withColor(0xFFAF00));
-
-    public interface Special {
-        MutableComponent withColor(String descriptionId);
-    }
-
-    public interface Expert extends Special {
-        @Override
-        default MutableComponent withColor(String descriptionId) {
-            return Component.translatable(descriptionId).withStyle(style -> style.withColor(AnimateColor.getExpertColor()));
-        }
-    }
-
-    public interface Master extends Special {
-        @Override
-        default MutableComponent withColor(String descriptionId) {
-            return Component.translatable(descriptionId).withStyle(style -> style.withColor(AnimateColor.getMasterColor()));
-        }
-    }
 }

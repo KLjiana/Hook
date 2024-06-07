@@ -4,7 +4,6 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import org.confluence.mod.block.ModBlocks;
 import org.confluence.mod.entity.hook.BaseHookEntity;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,13 +26,6 @@ public class BaseHookRenderer extends AbstractHookRenderer<BaseHookEntity> {
         super(pContext);
         this.CHAINS = new BlockState[]{
             Blocks.CHAIN.defaultBlockState(),
-            ModBlocks.AMETHYST_CHAIN.get().defaultBlockState(),
-            ModBlocks.TOPAZ_CHAIN.get().defaultBlockState(),
-            ModBlocks.SAPPHIRE_CHAIN.get().defaultBlockState(),
-            ModBlocks.EMERALD_CHAIN.get().defaultBlockState(),
-            ModBlocks.RUBY_CHAIN.get().defaultBlockState(),
-            ModBlocks.AMBER_CHAIN.get().defaultBlockState(),
-            ModBlocks.DIAMOND_CHAIN.get().defaultBlockState()
         };
     }
 
