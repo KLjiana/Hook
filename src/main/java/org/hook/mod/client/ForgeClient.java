@@ -13,10 +13,7 @@ import org.hook.mod.client.handler.HookThrowingHandler;
 public final class ForgeClient {
     @SubscribeEvent
     public static void clientTick(TickEvent.ClientTickEvent event) {
-        Minecraft minecraft = Minecraft.getInstance();
-        LocalPlayer localPlayer = minecraft.player;
         if (event.phase == TickEvent.Phase.START) return;
-        if (localPlayer == null) return;
-        HookThrowingHandler.handle(localPlayer);
+        HookThrowingHandler.handle();
     }
 }

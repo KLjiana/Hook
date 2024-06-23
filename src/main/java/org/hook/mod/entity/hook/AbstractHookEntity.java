@@ -1,6 +1,7 @@
 package org.hook.mod.entity.hook;
 
 import com.mojang.serialization.Codec;
+import com.sun.jdi.Value;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -8,6 +9,8 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -20,6 +23,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import org.hook.mod.Hook;
 import org.hook.mod.item.hook.AbstractHookItem;
 import org.hook.mod.util.CuriosUtils;
 import org.jetbrains.annotations.NotNull;
@@ -89,9 +93,24 @@ public abstract class AbstractHookEntity extends Projectile {
         setPos(x, y, z);
 
         HookState hookState = getHookState();
-        if (hookState == HookState.POP) {
-            setDeltaMovement(getDeltaMovement().scale(0.95).add(owner.position().subtract(position()).normalize().scale(0.1)));
-            if (distanceToSqr(owner) < 2.0) {
+        if (hookState == HookState.HOOKED) {
+            // 获取玩家和钩子的位置
+            Vec3 playerPos = owner.position();
+            Vec3 hookPos = position();
+
+            // 计算从玩家到钩子的方向向量
+            Vec3 direction = hookPos.subtract(playerPos).normalize();
+
+            // 计算拉力大小，可以根据需要调整这个值
+            double pullStrength = 0.2;
+
+            // 调整玩家的速度向量
+            Vec3 newVelocity = owner.getDeltaMovement().add(direction.scale(pullStrength));
+            owner.setDeltaMovement(newVelocity);
+        }
+        if (hookState == HookState.PULL) {
+            setDeltaMovement(getDeltaMovement().scale(0.95).add(owner.position().subtract(position()).normalize().scale(0.5)));
+            if (distanceToSqr(owner) < 4.0) {
                 discard();
                 return;
             }
@@ -102,11 +121,10 @@ public abstract class AbstractHookEntity extends Projectile {
             discard();
             return;
         }
-        if (hookState != HookState.POP && distanceToSqr(owner) > hookRangeSqr) {
-            setHookState(HookState.POP);
+        if (distanceToSqr(owner) > hookRangeSqr) {
+            setHookState(HookState.PULL);
             return;
         }
-
         if (hookState == HookState.PUSH) {
             Vec3 pos = position();
             Vec3 nextPos = pos.add(motion);
@@ -135,7 +153,7 @@ public abstract class AbstractHookEntity extends Projectile {
 
     public enum HookState implements StringRepresentable {
         PUSH(0, "push"), // 发射
-        POP(1, "pop"), // 收回
+        PULL(1, "pop"), // 拉回
         HOOKED(2, "hooked"); // 抓住
 
         public static final Codec<HookState> CODEC = StringRepresentable.fromEnum(HookState::values);

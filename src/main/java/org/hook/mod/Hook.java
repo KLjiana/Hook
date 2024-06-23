@@ -17,6 +17,14 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 
+/*TODO
+ *  f丢钩子然后拉过去
+ * 如果按加速键的话拉的更快
+ * 然后wsad的话会给那个方向的一个动量，以钩子为中心绕
+ * 然后再按一次f的话钩子收回
+ * 空格会有一个向上的力
+ */
+
 @SuppressWarnings("unused")
 @Mod(Hook.MODID)
 public final class Hook {

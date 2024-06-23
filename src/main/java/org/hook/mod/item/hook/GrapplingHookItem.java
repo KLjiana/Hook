@@ -9,7 +9,7 @@ import org.hook.mod.misc.ModRarity;
 
 public class GrapplingHookItem extends AbstractHookItem {
     public GrapplingHookItem() {
-        super(ModRarity.BLUE);
+        super(ModRarity.WHITE);
     }
 
     @Override
@@ -19,12 +19,12 @@ public class GrapplingHookItem extends AbstractHookItem {
 
     @Override
     public float getHookRange() {
-        return 80F;
+        return 40F;
     }
 
     @Override
     public float getHookVelocity() {
-        return 5F;
+        return 4F;
     }
 
     @Override
