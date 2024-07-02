@@ -1,7 +1,6 @@
 package org.hook.mod.entity.hook;
 
 import com.mojang.serialization.Codec;
-import com.sun.jdi.Value;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -9,8 +8,6 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -23,7 +20,6 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import org.hook.mod.Hook;
 import org.hook.mod.item.hook.AbstractHookItem;
 import org.hook.mod.util.CuriosUtils;
 import org.jetbrains.annotations.NotNull;
@@ -63,10 +59,6 @@ public abstract class AbstractHookEntity extends Projectile {
 
     public void setHookState(HookState state) {
         entityData.set(DATA_HOOK_STATE, state.id);
-    }
-
-    public double getPullVelocity() {
-        return 0.15;
     }
 
     protected void onHooked(BlockHitResult hitResult, ItemStack itemStack) {
