@@ -20,6 +20,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import org.hook.mod.Hook;
 import org.hook.mod.item.hook.AbstractHookItem;
 import org.hook.mod.util.CuriosUtils;
 import org.jetbrains.annotations.NotNull;
@@ -61,7 +62,7 @@ public abstract class AbstractHookEntity extends Projectile {
         entityData.set(DATA_HOOK_STATE, state.id);
     }
 
-    protected void onHooked(BlockHitResult hitResult, ItemStack itemStack) {
+    protected void onHooked(BlockHitResult hitResult) {
         BlockPos blockPos = hitResult.getBlockPos();
         level().gameEvent(GameEvent.PROJECTILE_LAND, blockPos, GameEvent.Context.of(this, level().getBlockState(blockPos)));
         setDeltaMovement(Vec3.ZERO);
@@ -96,6 +97,19 @@ public abstract class AbstractHookEntity extends Projectile {
             // 计算拉力大小，可以根据需要调整这个值
             double pullStrength = 0.2;
 
+            Hook.LOGGER.info(String.valueOf(owner));
+            if (owner.isCrouching()) return;
+
+            Vec3 subtract = position().subtract(owner.position());
+            double distance = subtract.lengthSqr();
+
+            if (distance < 1.0) {
+                Vec3 motions = owner.getDeltaMovement().scale(0.05); // 调整玩家加速的速度
+                owner.setDeltaMovement(motions.x, 0.0, motions.z);
+            } else {
+                Vec3 motions = subtract.normalize().scale(0.015); // 调整钩子拉动的速度
+                owner.setDeltaMovement(owner.getDeltaMovement().scale(0.95).add(motions)); // 调整减速度
+            }
             // 调整玩家的速度向量
             Vec3 newVelocity = owner.getDeltaMovement().add(direction.scale(pullStrength));
             owner.setDeltaMovement(newVelocity);
@@ -120,16 +134,29 @@ public abstract class AbstractHookEntity extends Projectile {
         if (hookState == HookState.PUSH) {
             Vec3 pos = position();
             Vec3 nextPos = pos.add(motion);
+
             BlockHitResult hitResult = level().clip(new ClipContext(pos, nextPos, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
-            if (hitResult.getType() != HitResult.Type.BLOCK) return;
-            motion = motion.scale(0.5);
-            if (hitResult.isInside()) {
-                setPos(getX() - motion.x, getY() - motion.y, getZ() - motion.z);
-            } else {
-                setPos(getX() + motion.x, getY() + motion.y, getZ() + motion.z);
+
+            if (hitResult.getType() == HitResult.Type.BLOCK) {
+                Vec3 hitPos = hitResult.getLocation();
+
+                double adjustX = hitPos.x - pos.x;
+                double adjustY = hitPos.y - pos.y;
+                double adjustZ = hitPos.z - pos.z;
+
+                double newX = pos.x + adjustX * 0.5;
+                double newY = pos.y + adjustY * 0.5;
+                double newZ = pos.z + adjustZ * 0.5;
+
+                if (hitResult.isInside()) {
+                    setPos(getX() - adjustX, getY() - adjustY, getZ() - adjustZ);
+                } else {
+                    setPos(newX, newY, newZ);
+                }
+
+                onHitBlock(hitResult);
+                onHooked(hitResult);
             }
-            onHitBlock(hitResult);
-            onHooked(hitResult, hook.get());
         }
     }
 
@@ -148,7 +175,6 @@ public abstract class AbstractHookEntity extends Projectile {
         PULL(1, "pop"), // 拉回
         HOOKED(2, "hooked"); // 抓住
 
-        public static final Codec<HookState> CODEC = StringRepresentable.fromEnum(HookState::values);
         private static final IntFunction<HookState> BY_ID = ByIdMap.continuous(HookState::getId, values(), ByIdMap.OutOfBoundsStrategy.CLAMP);
         final int id;
         private final String name;
