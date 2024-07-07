@@ -2,14 +2,15 @@ package org.hook.mod.item.hook;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
 import org.hook.mod.entity.hook.AbstractHookEntity;
 import org.hook.mod.entity.hook.BaseHookEntity;
-import org.hook.mod.misc.ModRarity;
 
 public class GrapplingHookItem extends AbstractHookItem {
+    public static final Rarity WHITE = Rarity.create("white", style -> style.withColor(0xFFFFFF));
     public GrapplingHookItem() {
-        super(ModRarity.WHITE);
+        super(WHITE);
     }
 
     @Override

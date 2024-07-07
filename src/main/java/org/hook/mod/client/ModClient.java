@@ -20,6 +20,5 @@ public final class ModClient {
     @SubscribeEvent
     public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.BASE_HOOK.get(), BaseHookRenderer::new);
-        /* todo 静止钩 */
     }
 }

@@ -9,8 +9,7 @@ import org.hook.mod.util.EnumRegister;
 import java.util.function.Supplier;
 
 public enum Hooks implements EnumRegister<AbstractHookItem> {
-    GRAPPLING_HOOK("grappling_hook", GrapplingHookItem::new),
-    /* todo 静止钩 */;
+    GRAPPLING_HOOK("grappling_hook", GrapplingHookItem::new);
 
     private final RegistryObject<AbstractHookItem> value;
 

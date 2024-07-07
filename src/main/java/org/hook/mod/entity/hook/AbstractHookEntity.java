@@ -1,10 +1,12 @@
 package org.hook.mod.entity.hook;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringRepresentable;
@@ -86,18 +88,21 @@ public abstract class AbstractHookEntity extends Projectile {
         setPos(x, y, z);
 
         HookState hookState = getHookState();
+
         if (hookState == HookState.HOOKED) {
-            // 获取玩家和钩子的位置
+
+            if (owner instanceof LocalPlayer localPlayer) {
+                if (localPlayer.input.up) {
+                        Hook.LOGGER.info("1114");
+                }
+            }
+
             Vec3 playerPos = owner.position();
             Vec3 hookPos = position();
 
-            // 计算从玩家到钩子的方向向量
             Vec3 direction = hookPos.subtract(playerPos).normalize();
-
-            // 计算拉力大小，可以根据需要调整这个值
             double pullStrength = 0.2;
 
-            Hook.LOGGER.info(String.valueOf(owner));
             if (owner.isCrouching()) return;
 
             Vec3 subtract = position().subtract(owner.position());
@@ -110,10 +115,11 @@ public abstract class AbstractHookEntity extends Projectile {
                 Vec3 motions = subtract.normalize().scale(0.015); // 调整钩子拉动的速度
                 owner.setDeltaMovement(owner.getDeltaMovement().scale(0.95).add(motions)); // 调整减速度
             }
-            // 调整玩家的速度向量
+
             Vec3 newVelocity = owner.getDeltaMovement().add(direction.scale(pullStrength));
             owner.setDeltaMovement(newVelocity);
         }
+
         if (hookState == HookState.PULL) {
             setDeltaMovement(getDeltaMovement().scale(0.95).add(owner.position().subtract(position()).normalize().scale(0.5)));
             if (distanceToSqr(owner) < 4.0) {
