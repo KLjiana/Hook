@@ -1,12 +1,10 @@
 package org.hook.mod.entity.hook;
 
-import com.mojang.serialization.Codec;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringRepresentable;
@@ -31,7 +29,7 @@ import java.util.Optional;
 import java.util.function.IntFunction;
 
 public abstract class AbstractHookEntity extends Projectile {
-    private static final EntityDataAccessor<Integer> DATA_HOOK_STATE = SynchedEntityData.defineId(AbstractHookEntity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> DATA_HOOK_STATE = SynchedEntityData.defineId(AbstractHookEntity.class, EntityDataSerializers.INT);
     private final float hookRangeSqr;
     private final AbstractHookItem.HookType hookType;
     public float lastDelta = 0.0F;
@@ -90,53 +88,59 @@ public abstract class AbstractHookEntity extends Projectile {
         HookState hookState = getHookState();
 
         if (hookState == HookState.HOOKED) {
-
             if (owner instanceof LocalPlayer localPlayer) {
-                if (localPlayer.input.up) {
-                        Hook.LOGGER.info("1114");
+                Vec3 deltaMovement = localPlayer.getDeltaMovement();
+                Vec3 subtract = position().subtract(localPlayer.position());
+
+                // 增加WASD移动幅度
+                if (localPlayer.input.left && deltaMovement.y < -1.2) {
+                    Hook.LOGGER.info(String.valueOf(deltaMovement));
+                    localPlayer.setDeltaMovement(deltaMovement.subtract(subtract.cross(new Vec3(0, 0.4, 0)).normalize().scale(1.2)));
+                }
+                if (localPlayer.input.right && deltaMovement.y < 1.2) {
+                    Hook.LOGGER.info(String.valueOf(deltaMovement));
+                    localPlayer.setDeltaMovement(deltaMovement.add(subtract.cross(new Vec3(0, 0.4, 0)).normalize().scale(1.2)));
+                }
+
+                // 增加空格（跳跃）键的向上移动幅度
+                if (localPlayer.input.jumping && deltaMovement.y < 2.2) {
+                    Hook.LOGGER.info(String.valueOf(deltaMovement));
+                    localPlayer.setDeltaMovement(deltaMovement.add(0, 0.6, 0));
+                } else if(localPlayer.input.jumping) {
+                    localPlayer.setDeltaMovement(deltaMovement.add(0, -2, 0));
                 }
             }
-
-            Vec3 playerPos = owner.position();
-            Vec3 hookPos = position();
-
-            Vec3 direction = hookPos.subtract(playerPos).normalize();
-            double pullStrength = 0.2;
-
-            if (owner.isCrouching()) return;
-
             Vec3 subtract = position().subtract(owner.position());
-            double distance = subtract.lengthSqr();
+            Vec3 motions = subtract.normalize().scale(0.15); // 调整钩子拉动的速度
 
-            if (distance < 1.0) {
-                Vec3 motions = owner.getDeltaMovement().scale(0.05); // 调整玩家加速的速度
-                owner.setDeltaMovement(motions.x, 0.0, motions.z);
-            } else {
-                Vec3 motions = subtract.normalize().scale(0.015); // 调整钩子拉动的速度
-                owner.setDeltaMovement(owner.getDeltaMovement().scale(0.95).add(motions)); // 调整减速度
-            }
-
-            Vec3 newVelocity = owner.getDeltaMovement().add(direction.scale(pullStrength));
-            owner.setDeltaMovement(newVelocity);
+            owner.setDeltaMovement(owner.getDeltaMovement().scale(0.85).add(motions)); // 调整减速度
+            return;
         }
 
-        if (hookState == HookState.PULL) {
-            setDeltaMovement(getDeltaMovement().scale(0.95).add(owner.position().subtract(position()).normalize().scale(0.5)));
-            if (distanceToSqr(owner) < 4.0) {
-                discard();
-                return;
-            }
-        }
         if (level().isClientSide) return;
         Optional<ItemStack> hook = CuriosUtils.getSlot((LivingEntity) owner, "hook", 0);
         if (hook.isEmpty()) {
             discard();
             return;
         }
+
+        if (hookState == HookState.PULL) {
+            if (distanceToSqr(owner) < 2.0) {
+                discard();
+                return;
+            } else if(distanceToSqr(owner) > 1500.0) {
+                setDeltaMovement(getDeltaMovement().scale(0.85).add(owner.position().subtract(position()).normalize().scale(4)));
+            } else {
+                setDeltaMovement(getDeltaMovement().scale(0.85).add(owner.position().subtract(position()).normalize().scale(0.5)));
+            }
+            return;
+        }
+
         if (distanceToSqr(owner) > hookRangeSqr) {
             setHookState(HookState.PULL);
             return;
         }
+
         if (hookState == HookState.PUSH) {
             Vec3 pos = position();
             Vec3 nextPos = pos.add(motion);
@@ -150,16 +154,15 @@ public abstract class AbstractHookEntity extends Projectile {
                 double adjustY = hitPos.y - pos.y;
                 double adjustZ = hitPos.z - pos.z;
 
-                double newX = pos.x + adjustX * 0.5;
-                double newY = pos.y + adjustY * 0.5;
-                double newZ = pos.z + adjustZ * 0.5;
+                double newX = pos.x + adjustX * 0.8;
+                double newY = pos.y + adjustY * 0.8;
+                double newZ = pos.z + adjustZ * 0.8;
 
                 if (hitResult.isInside()) {
                     setPos(getX() - adjustX, getY() - adjustY, getZ() - adjustZ);
                 } else {
                     setPos(newX, newY, newZ);
                 }
-
                 onHitBlock(hitResult);
                 onHooked(hitResult);
             }
@@ -172,13 +175,12 @@ public abstract class AbstractHookEntity extends Projectile {
         float y = -Mth.sin((pX + pZ) * Mth.DEG_TO_RAD);
         float z = Mth.cos(pY * Mth.DEG_TO_RAD) * Mth.cos(pX * Mth.DEG_TO_RAD);
         shoot(x, y, z, pVelocity, pInaccuracy);
-        Vec3 motion = pShooter.getDeltaMovement();
-        setDeltaMovement(getDeltaMovement().add(motion.x, 0.0, motion.z));
+        setDeltaMovement(getDeltaMovement().scale(15));
     }
 
     public enum HookState implements StringRepresentable {
         PUSH(0, "push"), // 发射
-        PULL(1, "pop"), // 拉回
+        PULL(1, "pull"), // 拉回
         HOOKED(2, "hooked"); // 抓住
 
         private static final IntFunction<HookState> BY_ID = ByIdMap.continuous(HookState::getId, values(), ByIdMap.OutOfBoundsStrategy.CLAMP);

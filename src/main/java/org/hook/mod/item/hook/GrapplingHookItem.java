@@ -8,9 +8,8 @@ import org.hook.mod.entity.hook.AbstractHookEntity;
 import org.hook.mod.entity.hook.BaseHookEntity;
 
 public class GrapplingHookItem extends AbstractHookItem {
-    public static final Rarity WHITE = Rarity.create("white", style -> style.withColor(0xFFFFFF));
     public GrapplingHookItem() {
-        super(WHITE);
+        super(Rarity.create("white", style -> style.withColor(0xFFFFFF)));
     }
 
     @Override
@@ -25,12 +24,12 @@ public class GrapplingHookItem extends AbstractHookItem {
 
     @Override
     public float getHookVelocity() {
-        return 4F;
+        return 2F;
     }
 
     @Override
     public AbstractHookEntity getHook(ItemStack itemStack, AbstractHookItem item, Player player, Level level) {
-        return new BaseHookEntity(item, player, level, BaseHookEntity.Variant.DIAMOND);
+        return new BaseHookEntity(item, player, level, BaseHookEntity.Variant.AMETHYST);
     }
 
     @Override
