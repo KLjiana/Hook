@@ -13,27 +13,12 @@ public class GrapplingHookItem extends AbstractHookItem {
     }
 
     @Override
-    public int getHookAmount() {
-        return 1;
-    }
-
-    @Override
     public float getHookRange() {
         return 40F;
     }
 
     @Override
-    public float getHookVelocity() {
-        return 2F;
-    }
-
-    @Override
     public AbstractHookEntity getHook(ItemStack itemStack, AbstractHookItem item, Player player, Level level) {
-        return new BaseHookEntity(item, player, level, BaseHookEntity.Variant.AMETHYST);
-    }
-
-    @Override
-    public HookType getHookType() {
-        return HookType.SINGLE;
+        return new BaseHookEntity(item, player, level, BaseHookEntity.Variant.GRAPPLING);
     }
 }

@@ -20,7 +20,6 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import org.hook.mod.Hook;
 import org.hook.mod.item.hook.AbstractHookItem;
 import org.hook.mod.util.CuriosUtils;
 import org.jetbrains.annotations.NotNull;
@@ -29,21 +28,19 @@ import java.util.Optional;
 import java.util.function.IntFunction;
 
 public abstract class AbstractHookEntity extends Projectile {
+    private int time = 0;
     public static final EntityDataAccessor<Integer> DATA_HOOK_STATE = SynchedEntityData.defineId(AbstractHookEntity.class, EntityDataSerializers.INT);
     private final float hookRangeSqr;
-    private final AbstractHookItem.HookType hookType;
     public float lastDelta = 0.0F;
 
     public AbstractHookEntity(EntityType<? extends AbstractHookEntity> entityType, Level pLevel) {
         super(entityType, pLevel);
         this.hookRangeSqr = 0.0F;
-        this.hookType = null;
     }
 
     public AbstractHookEntity(EntityType<? extends AbstractHookEntity> entityType, AbstractHookItem item, Player player, Level level) {
         super(entityType, level);
         this.hookRangeSqr = item.getHookRange() * item.getHookRange();
-        this.hookType = item.getHookType();
         setOwner(player);
         setNoGravity(true);
         setPos(player.getX(), player.getEyeY() - 0.1, player.getZ());
@@ -87,33 +84,48 @@ public abstract class AbstractHookEntity extends Projectile {
 
         HookState hookState = getHookState();
 
+        time++;
+        if (time >= 100) {
+            setHookState(HookState.PULL);
+        }
+
         if (hookState == HookState.HOOKED) {
+            //Hook.LOGGER.info(String.valueOf(distanceToSqr(owner)));
             if (owner instanceof LocalPlayer localPlayer) {
                 Vec3 deltaMovement = localPlayer.getDeltaMovement();
                 Vec3 subtract = position().subtract(localPlayer.position());
 
                 // 增加WASD移动幅度
-                if (localPlayer.input.left && deltaMovement.y < -1.2) {
-                    Hook.LOGGER.info(String.valueOf(deltaMovement));
-                    localPlayer.setDeltaMovement(deltaMovement.subtract(subtract.cross(new Vec3(0, 0.4, 0)).normalize().scale(1.2)));
+                if (localPlayer.input.up && deltaMovement.x < 1.2) {
+                    //Hook.LOGGER.info("up" + deltaMovement);
+                    localPlayer.setDeltaMovement(deltaMovement.add(Vec3.directionFromRotation(owner.getXRot(), owner.getYRot()).scale(0.13)));
                 }
-                if (localPlayer.input.right && deltaMovement.y < 1.2) {
-                    Hook.LOGGER.info(String.valueOf(deltaMovement));
-                    localPlayer.setDeltaMovement(deltaMovement.add(subtract.cross(new Vec3(0, 0.4, 0)).normalize().scale(1.2)));
+                if (localPlayer.input.left && deltaMovement.y > -0.07) {
+                    //Hook.LOGGER.info("left" + deltaMovement);
+                    localPlayer.setDeltaMovement(deltaMovement.add(subtract.cross(new Vec3(0, -0.03, 0))));
                 }
-
-                // 增加空格（跳跃）键的向上移动幅度
+                if (localPlayer.input.right && deltaMovement.y < -0.07) {
+                    //Hook.LOGGER.info("right" + deltaMovement);
+                    localPlayer.setDeltaMovement(deltaMovement.add(subtract.cross(new Vec3(0, 0.03, 0))));
+                }
                 if (localPlayer.input.jumping && deltaMovement.y < 2.2) {
-                    Hook.LOGGER.info(String.valueOf(deltaMovement));
-                    localPlayer.setDeltaMovement(deltaMovement.add(0, 0.6, 0));
-                } else if(localPlayer.input.jumping) {
-                    localPlayer.setDeltaMovement(deltaMovement.add(0, -2, 0));
+                    //Hook.LOGGER.info("jumping" + deltaMovement);
+                    localPlayer.setDeltaMovement(deltaMovement.add(0, 0.15, 0));
                 }
             }
-            Vec3 subtract = position().subtract(owner.position());
-            Vec3 motions = subtract.normalize().scale(0.15); // 调整钩子拉动的速度
 
-            owner.setDeltaMovement(owner.getDeltaMovement().scale(0.85).add(motions)); // 调整减速度
+            Vec3 subtract = position().subtract(owner.position());
+            if ((distanceToSqr(owner) < 20)) {
+                Vec3 motions = subtract.normalize().scale(0.06); // 调整钩子拉动的速度
+                owner.setDeltaMovement(owner.getDeltaMovement().scale(0.85).add(motions)); // 调整减速度
+            } else {
+                Vec3 motions = subtract.normalize().scale(0.12); // 调整钩子拉动的速度
+                owner.setDeltaMovement(owner.getDeltaMovement().scale(0.85).add(motions)); // 调整减速度
+            }
+
+            if ((distanceToSqr(owner) < 20 && owner.onGround()) || distanceToSqr(owner) > 2000) {
+                setHookState(HookState.PULL);
+            }
             return;
         }
 
@@ -128,7 +140,7 @@ public abstract class AbstractHookEntity extends Projectile {
             if (distanceToSqr(owner) < 2.0) {
                 discard();
                 return;
-            } else if(distanceToSqr(owner) > 1500.0) {
+            } else if (distanceToSqr(owner) > 1500.0) {
                 setDeltaMovement(getDeltaMovement().scale(0.85).add(owner.position().subtract(position()).normalize().scale(4)));
             } else {
                 setDeltaMovement(getDeltaMovement().scale(0.85).add(owner.position().subtract(position()).normalize().scale(0.5)));
@@ -142,6 +154,9 @@ public abstract class AbstractHookEntity extends Projectile {
         }
 
         if (hookState == HookState.PUSH) {
+            if (distanceToSqr(owner) < 4) {
+                setDeltaMovement(getDeltaMovement().scale(1.3));
+            }
             Vec3 pos = position();
             Vec3 nextPos = pos.add(motion);
 
@@ -171,6 +186,7 @@ public abstract class AbstractHookEntity extends Projectile {
 
     @Override
     public void shootFromRotation(@NotNull Entity pShooter, float pX, float pY, float pZ, float pVelocity, float pInaccuracy) {
+        time = 0;
         float x = -Mth.sin(pY * Mth.DEG_TO_RAD) * Mth.cos(pX * Mth.DEG_TO_RAD);
         float y = -Mth.sin((pX + pZ) * Mth.DEG_TO_RAD);
         float z = Mth.cos(pY * Mth.DEG_TO_RAD) * Mth.cos(pX * Mth.DEG_TO_RAD);

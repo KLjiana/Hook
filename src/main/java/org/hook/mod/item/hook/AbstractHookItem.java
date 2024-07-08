@@ -23,15 +23,9 @@ public abstract class AbstractHookItem extends Item implements ICurioItem {
         this(new Properties().rarity(rarity));
     }
 
-    public abstract int getHookAmount();
-
     public abstract float getHookRange();
 
-    public abstract float getHookVelocity();
-
     public abstract AbstractHookEntity getHook(ItemStack itemStack, AbstractHookItem item, Player player, Level level);
-
-    public abstract HookType getHookType();
 
     @Override
     public boolean canEquip(SlotContext slotContext, ItemStack stack) {
@@ -65,11 +59,5 @@ public abstract class AbstractHookItem extends Item implements ICurioItem {
             return level.getEntity(compoundTag.getInt("id")) instanceof AbstractHookEntity hookEntity ? hookEntity : null;
         }
         return null;
-    }
-
-    public enum HookType {
-        SINGLE, // 只有一个钩爪
-        SIMULTANEOUS, // 有多个钩爪,且可以同时保持
-        INDIVIDUAL // 有多个钩爪,但只能保持其一
     }
 }
