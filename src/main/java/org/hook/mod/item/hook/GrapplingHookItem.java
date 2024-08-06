@@ -13,6 +13,11 @@ public class GrapplingHookItem extends AbstractHookItem {
     }
 
     @Override
+    public int getHookAmount() {
+        return 1;
+    }
+
+    @Override
     public float getHookRange() {
         return 40F;
     }

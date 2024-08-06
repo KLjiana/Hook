@@ -2,6 +2,7 @@ package org.hook.mod.client;
 
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -14,7 +15,8 @@ public final class ForgeClient {
     @SubscribeEvent
     public static void clientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.START) return;
+        LocalPlayer localPlayer = Minecraft.getInstance().player;
         Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
-        HookThrowingHandler.handle(camera);
+        HookThrowingHandler.handle(camera, localPlayer);
     }
 }

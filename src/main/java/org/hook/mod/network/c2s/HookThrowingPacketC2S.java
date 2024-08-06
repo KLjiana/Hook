@@ -1,5 +1,7 @@
 package org.hook.mod.network.c2s;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -13,43 +15,49 @@ import org.hook.mod.util.CuriosUtils;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public record HookThrowingPacketC2S(float x, float y) {
+public record HookThrowingPacketC2S(boolean aBoolean, float x, float y) {
     public static int id;
 
-    public static HookThrowingPacketC2S hook(float rotX, float rotY) {
-        return new HookThrowingPacketC2S(rotX, rotY);
+    public static HookThrowingPacketC2S hook(boolean aBoolean, float rotX, float rotY) {
+        return new HookThrowingPacketC2S(aBoolean, rotX, rotY);
     }
 
     public static void encode(HookThrowingPacketC2S packet, FriendlyByteBuf friendlyByteBuf) {
+        friendlyByteBuf.writeBoolean(packet.aBoolean);
         friendlyByteBuf.writeFloat(packet.x);
         friendlyByteBuf.writeFloat(packet.y);
     }
 
     public static HookThrowingPacketC2S decode(FriendlyByteBuf friendlyByteBuf) {
-        return new HookThrowingPacketC2S(friendlyByteBuf.readFloat(), friendlyByteBuf.readFloat());
+        return new HookThrowingPacketC2S(friendlyByteBuf.readBoolean(), friendlyByteBuf.readFloat(), friendlyByteBuf.readFloat());
     }
 
-    public static void handle(HookThrowingPacketC2S rot, Supplier<NetworkEvent.Context> ctx) {
+    public static void handle(HookThrowingPacketC2S packet, Supplier<NetworkEvent.Context> ctx) {
         NetworkEvent.Context context = ctx.get();
         context.enqueueWork(() -> {
             ServerPlayer player = context.getSender();
             if (player == null) return;
             ServerLevel level = player.serverLevel();
-
-            if (level.getEntity(id) == null) {
-                Optional<ItemStack> hook = CuriosUtils.getSlot(player, "hook", 0);
-                AbstractHookItem item = (AbstractHookItem) hook.get().getItem();
-                AbstractHookEntity hookEntity = item.getHook(hook.get(), item, player, level);
-                id = hookEntity.getId();
-
-                hookEntity.shootFromRotation(player, rot.x, rot.y, 0.0F, 0.1F, 0.0F);
-                level.addFreshEntity(hookEntity);
-            } else{
-                Entity entity = level.getEntity(id);
-                if (entity instanceof AbstractHookEntity hookEntity) {
-                    hookEntity.setHookState(AbstractHookEntity.HookState.PULL);
+            CuriosUtils.getSlot(player, "hook", 0).ifPresent(itemStack -> {
+                if (itemStack.getItem() instanceof AbstractHookItem item && item.canHook(level, itemStack)) {
+                    AbstractHookEntity hook = item.getHook(itemStack, item, player, level);
+                    CompoundTag tag = new CompoundTag();
+                    tag.putInt("id", hook.getId());
+                    if (itemStack.getOrCreateTag().get("hooks") instanceof ListTag list) {
+                        AbstractHookItem.removeAll(list, level);
+                        list.add(tag);
+                    }
+                    if (packet.aBoolean) {
+                        hook.shootFromRotation(player, packet.x, packet.y, 0.0F, 0.1F, 0.5F);
+                        level.addFreshEntity(hook);
+                    } else {
+                        Entity entity = level.getEntity(hook.getId());
+                        if (entity instanceof AbstractHookEntity hookEntity) {
+                            hookEntity.setHookState(AbstractHookEntity.HookState.PULL);
+                        }
+                    }
                 }
-            }
+            });
         });
         context.setPacketHandled(true);
     }

@@ -22,7 +22,7 @@ public abstract class AbstractHookItem extends Item implements ICurioItem {
     public AbstractHookItem(Rarity rarity) {
         this(new Properties().rarity(rarity));
     }
-
+    public abstract int getHookAmount();
     public abstract float getHookRange();
 
     public abstract AbstractHookEntity getHook(ItemStack itemStack, AbstractHookItem item, Player player, Level level);
@@ -31,7 +31,21 @@ public abstract class AbstractHookItem extends Item implements ICurioItem {
     public boolean canEquip(SlotContext slotContext, ItemStack stack) {
         return "hook".equals(slotContext.identifier());
     }
-
+    public boolean canHook(ServerLevel level, ItemStack itemStack) {
+        CompoundTag nbt = itemStack.getOrCreateTag();
+        if (nbt.get("hooks") instanceof ListTag list) {
+            list.removeIf(tag -> getHookEntity(tag, level) == null);
+            if (this instanceof IHookFastThrow) return list.size() <= getHookAmount();
+            if (list.isEmpty()) return true;
+            return list.stream().allMatch(tag -> {
+                AbstractHookEntity hookEntity = getHookEntity(tag, level);
+                return hookEntity == null || hookEntity.getHookState() == AbstractHookEntity.HookState.HOOKED;
+            });
+        } else {
+            nbt.put("hooks", new ListTag());
+            return true;
+        }
+    }
     @Override
     public boolean canEquipFromUse(SlotContext slotContext, ItemStack stack) {
         return canEquip(slotContext, stack);
